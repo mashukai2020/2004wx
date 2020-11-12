@@ -16,6 +16,17 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
-Route::get('/rdeis1','Red\RedController@test');
-Route::get('/my','Red\RedController@mysq');
+Route::any('/index','Weixin\IndexController@index');
+Route::get('/token','Weixin\IndexController@token');
+Route::get('/mage','Weixin\MaController@mage');
+Route::any('/wx','Weixin\IndexController@wx');
+Route::get('/tianqi','Weixin\MaController@tianqi');
+Route::get('/getuser','Weixin\IndexController@getuser');
+Route::get('/ruku','Weixin\IndexController@ruku');
+
+
+
+
+
+
 

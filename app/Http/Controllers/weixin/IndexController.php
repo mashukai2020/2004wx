@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Weixin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redis;
-
+use GuzzleHttp\Client;
 class IndexController extends Controller
 {
     protected $xml_obj;
@@ -139,7 +139,6 @@ class IndexController extends Controller
     {
         $postStr = file_get_contents("php://input");
         $postobj = simplexml_load_string($postStr);
-        $this->xml_obj = $postobj;
         if ($postobj->MsgType == 'event') {
             if ($postobj->Event == 'subscribe') {
                 $ToUserName = $postobj->FromUserName;
@@ -164,6 +163,7 @@ class IndexController extends Controller
                 $info = sprintf($temple, $ToUserName, $FromUserName, $CreateTime, $MsgType, $Content);
 
                 echo $info;
+                $this->getuser();
                 exit;
             }
         } else if ($postobj->MsgType == 'text') {
@@ -213,8 +213,7 @@ class IndexController extends Controller
     public function getuser(){
         $token = $this->token();
 
-        $openid = $this->xml_obj->FromUserName;
-        dd($openid);
+        $openid = 'odv_XwFbDXIcd9r7WFoAeN5LOU8M';
         $url = 'https://api.weixin.qq.com/cgi-bin/user/info?access_token='.$token.'&openid='.$openid.'&lang=zh_CN';
 
         //请求接口
@@ -222,8 +221,12 @@ class IndexController extends Controller
         $response = $client->request('GET',$url,[
             'verify'    => false
         ]);
-        return  json_decode($response->getBody(),true);    }
-
-
-
+        return  json_decode($response->getBody(),true);
+        $this->ruku();
+    }
+    public function ruku(){
+        $res=$this->getuser();
+        $res2= \DB::table('puser')->insert($res);
+        dd($res);
+    }
 }
