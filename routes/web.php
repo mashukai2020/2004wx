@@ -16,3 +16,6 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+Route::get('/rdeis1','Red\RedController@test');
+Route::get('/my','Red\RedController@mysq');
+
