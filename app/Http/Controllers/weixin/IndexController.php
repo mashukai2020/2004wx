@@ -88,6 +88,7 @@ class IndexController extends Controller
         curl_setopt($ch,CURLOPT_SSL_VERIFYHOST,false);
         //curl_setopt($ch,CURLOPT_SSL_VERIFYHOST,1);
         $output = curl_exec($ch);
+//        dump($output);exit;
         //4.关闭
         curl_close($ch);
 //        dump($output);
@@ -146,13 +147,13 @@ class IndexController extends Controller
                 $CreateTime = time();
                 $MsgType = 'text';
                 $a = [
-                    "欢迎",
-                    "来了老弟",
-                    "什么风把你吹来了",
-                    "welcome",
+                    "随机1欢迎",
+                    "随机2来了老弟",
+                    "随机3什么风把你吹来了",
+                    "随机4welcome",
                 ];
                 $array = $a;
-                $Content = $array[array_rand($array)];
+                $Content = $array[array_rand($array)].date( "Y-m-d H : i : s",$CreateTime);
                 $temple = '<xml>
                             <ToUserName><![CDATA[%s]]></ToUserName>
                             <FromUserName><![CDATA[%s]]></FromUserName>
@@ -174,9 +175,6 @@ class IndexController extends Controller
             $CreateTime = time();
             $MsgType = 'text';
             switch ($msg) {
-                case'命令';
-                    $Content = '在吗，你是,图文';
-                    break;
                 case'在吗';
                     $Content = '在呢';
                     break;
@@ -195,7 +193,7 @@ class IndexController extends Controller
                     ];
                     $this->textimg($postobj, $Content);
                 default:
-                    $Content = '你可以尝试一下换个命令：比如命令';
+                    $Content = '你可以尝试一下换个命令：比如图文：在吗';
                     break;
             }
             $temple = '<xml>
@@ -215,7 +213,7 @@ class IndexController extends Controller
 
         $openid = 'odv_XwFbDXIcd9r7WFoAeN5LOU8M';
         $url = 'https://api.weixin.qq.com/cgi-bin/user/info?access_token='.$token.'&openid='.$openid.'&lang=zh_CN';
-
+//        dd($url);exit;
         //请求接口
         $client = new Client();
         $response = $client->request('GET',$url,[
@@ -226,7 +224,33 @@ class IndexController extends Controller
     }
     public function ruku(){
         $res=$this->getuser();
+//        dd($res);
         $res2= \DB::table('puser')->insert($res);
         dd($res);
+    }
+    //图片
+    public function textimg($postobj,$Content){
+        $ToUserName=$postobj->FromUserName;
+        $FromUserName=$postobj->ToUserName;
+        $CreateTime=time();
+        $MsgType='news';
+        $ArticleCount=1;
+        $temple='<xml>
+                <ToUserName><![CDATA[%s]]></ToUserName>
+                <FromUserName><![CDATA[%s]]></FromUserName>
+                <CreateTime>%s</CreateTime>
+                <MsgType><![CDATA[%s]]></MsgType>
+                <ArticleCount>%s</ArticleCount>
+                <Articles>
+                <item>
+                <Title><![CDATA[%s]]></Title>
+                <Description><![CDATA[%s]]></Description>
+                <PicUrl><![CDATA[%s]]></PicUrl>
+                <Url><![CDATA[%s]]></Url>
+                </item>
+                </Articles>
+                </xml>';
+        $info=sprintf($temple,$ToUserName,$FromUserName,$CreateTime,$MsgType,$ArticleCount,$Content['Title'],$Content['Description'],$Content['PicUrl'],$Content['Url']);
+        echo $info;
     }
 }
